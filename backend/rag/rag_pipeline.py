@@ -30,27 +30,24 @@ llm = InferenceClient(
 
 # Ask Question
 
-question = input("Enter your question: ")
+def ask_question(question):
 
-query_embedding = embedding_model.encode(
-    question
-)
+    query_embedding = embedding_model.encode(
+        question
+    )
 
-results = collection.query(
-    query_embeddings=[
-        query_embedding.tolist()
-    ],
-    n_results=3
-)
+    results = collection.query(
+        query_embeddings=[
+            query_embedding.tolist()
+        ],
+        n_results=3
+    )
 
-context = "\n".join(
-    results["documents"][0]
-)
+    context = "\n".join(
+        results["documents"][0]
+    )
 
-print("\nRETRIEVED CONTEXT:")
-print(context)
-
-prompt = f"""
+    prompt = f"""
 Answer ONLY using the context below.
 
 Context:
@@ -62,19 +59,35 @@ Question:
 Answer:
 """
 
-response = llm.chat_completion(
-    model="Qwen/Qwen2.5-7B-Instruct",
-    messages=[
-        {
-            "role": "user",
-            "content": prompt
-        }
-    ],
-    max_tokens=200
-)
+    response = llm.chat_completion(
+        model="Qwen/Qwen2.5-7B-Instruct",
+        messages=[
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        max_tokens=200
+    )
 
-print("\nQUESTION:")
-print(question)
+    return {
+        "question": question,
+        "context": context,
+        "answer": response.choices[0].message.content
+    }
 
-print("\nANSWER:")
-print(response.choices[0].message.content)
+
+if __name__ == "__main__":
+
+    question = input("Enter your question: ")
+
+    result = ask_question(question)
+
+    print("\nRETRIEVED CONTEXT:")
+    print(result["context"])
+
+    print("\nQUESTION:")
+    print(result["question"])
+
+    print("\nANSWER:")
+    print(result["answer"])
