@@ -25,8 +25,9 @@ st.write(
 # Session State
 # ----------------------------
 
-if "documents_processed" not in st.session_state:
-    st.session_state.documents_processed = False
+documents_processed = os.path.exists(
+    "uploads/.processed"
+)
 
 # ----------------------------
 # Upload Folder
@@ -56,6 +57,14 @@ if uploaded_files:
 
         with st.spinner("Processing documents..."):
 
+            processed_flag = os.path.join(
+                UPLOAD_FOLDER,
+                ".processed"
+            )
+            
+            if os.path.exists(processed_flag):
+                os.remove(processed_flag)
+
             # Remove previously uploaded PDFs
             for filename in os.listdir(UPLOAD_FOLDER):
 
@@ -80,15 +89,18 @@ if uploaded_files:
 
             process_documents(UPLOAD_FOLDER)
 
-            st.session_state.documents_processed = True
+            with open("uploads/.processed", "w") as f:
+                f.write("true")
 
         st.success("✅ Documents processed successfully!")
 
 # ----------------------------
 # Ask Questions
 # ----------------------------
-st.write("documents_processed =", st.session_state.documents_processed)
-if st.session_state.documents_processed:
+
+st.write("documents_processed =", documents_processed)
+
+if documents_processed:
 
     st.divider()
 
