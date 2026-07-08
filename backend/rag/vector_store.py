@@ -1,17 +1,9 @@
 import os
 import chromadb
+
 from backend.rag.pdf_loader import load_pdf
 from backend.rag.chunker import create_chunks
 from backend.embeddings.embedder import generate_embeddings
-
-
-# ----------------------------
-# ChromaDB
-# ----------------------------
-
-client = chromadb.PersistentClient(
-    path="backend/rag/chroma_db"
-)
 
 
 # ----------------------------
@@ -21,6 +13,15 @@ client = chromadb.PersistentClient(
 def process_documents(upload_folder):
 
     collection_name = "medical_docs"
+
+    # Create ChromaDB folder if it doesn't exist
+    chroma_path = "backend/rag/chroma_db"
+    os.makedirs(chroma_path, exist_ok=True)
+
+    # Initialize ChromaDB
+    client = chromadb.PersistentClient(
+        path=chroma_path
+    )
 
     # Delete old collection if it exists
     try:
@@ -34,13 +35,16 @@ def process_documents(upload_folder):
 
     document_id = 0
 
-    # Loop through every uploaded PDF
+    # Loop through uploaded PDFs
     for filename in os.listdir(upload_folder):
 
         if not filename.lower().endswith(".pdf"):
             continue
 
-        pdf_path = os.path.join(upload_folder, filename)
+        pdf_path = os.path.join(
+            upload_folder,
+            filename
+        )
 
         print(f"Reading {filename}")
 
@@ -84,4 +88,3 @@ def process_documents(upload_folder):
         print(f"{filename} stored successfully.")
 
     print("\nAll documents processed successfully!")
-

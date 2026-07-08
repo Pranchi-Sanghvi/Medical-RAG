@@ -1,18 +1,11 @@
+import os
 import chromadb
+
 from sentence_transformers import SentenceTransformer
 from huggingface_hub import InferenceClient
 from dotenv import load_dotenv
-import os
 
 load_dotenv()
-
-# ----------------------------
-# ChromaDB
-# ----------------------------
-
-client = chromadb.PersistentClient(
-    path="backend/rag/chroma_db"
-)
 
 # ----------------------------
 # Embedding Model
@@ -36,9 +29,26 @@ llm = InferenceClient(
 
 def ask_question(question):
 
-    collection = client.get_collection(
-        name="medical_docs"
+    # Create ChromaDB folder if it doesn't exist
+    chroma_path = "backend/rag/chroma_db"
+    os.makedirs(chroma_path, exist_ok=True)
+
+    client = chromadb.PersistentClient(
+        path=chroma_path
     )
+
+    try:
+        collection = client.get_collection(
+            name="medical_docs"
+        )
+    except Exception:
+
+        return {
+            "question": question,
+            "context": "",
+            "answer": "Please upload and process your PDF documents first.",
+            "sources": []
+        }
 
     query_embedding = embedding_model.encode(question)
 
@@ -81,14 +91,11 @@ Answer:
         max_tokens=200
     )
 
-    # Remove duplicate filenames
     sources = sorted(
-        list(
-            {
-                metadata["source"]
-                for metadata in metadatas
-            }
-        )
+        {
+            metadata["source"]
+            for metadata in metadatas
+        }
     )
 
     return {
@@ -97,4 +104,3 @@ Answer:
         "answer": response.choices[0].message.content,
         "sources": sources
     }
-
