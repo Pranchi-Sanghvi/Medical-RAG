@@ -61,7 +61,7 @@ if uploaded_files:
                 UPLOAD_FOLDER,
                 ".processed"
             )
-            
+
             if os.path.exists(processed_flag):
                 os.remove(processed_flag)
 
@@ -97,8 +97,6 @@ if uploaded_files:
 # ----------------------------
 # Ask Questions
 # ----------------------------
-
-st.write("documents_processed =", documents_processed)
 
 if documents_processed:
 
