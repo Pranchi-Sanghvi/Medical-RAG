@@ -1,27 +1,17 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-import fitz
 
-# Load PDF
 
-pdf_path = "../../data/pdfs/Diabetes.pdf"  # can also write :- pdf_path = r"C:\Users\PRANCHI\medical-rag\data\pdfs\Diabetes.pdf"
+def create_chunks(text):
+    """
+    Splits text into smaller chunks.
+    """
 
-doc = fitz.open(pdf_path)
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=1000,
+        chunk_overlap=100
+    )
 
-text = ""
+    chunks = splitter.split_text(text)
 
-for page in doc:
-    text += page.get_text()
+    return chunks
 
-# Chunking
-
-splitter = RecursiveCharacterTextSplitter(
-    chunk_size=1000,
-    chunk_overlap=100
-)
-
-chunks = splitter.split_text(text)
-
-print("Number of chunks:", len(chunks))
-
-print("\nFirst chunk:\n")
-print(chunks[0])

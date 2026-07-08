@@ -1,13 +1,20 @@
 import fitz
+import os
 
-pdf_path = "../../data/pdfs/Diabetes.pdf" # can also write :- pdf_path = r"C:\Users\PRANCHI\medical-rag\data\pdfs\Diabetes.pdf"
 
-doc = fitz.open(pdf_path)
+def load_pdf(pdf_path):
+    """
+    Reads a PDF and returns the extracted text.
+    """
 
-text = ""
+    doc = fitz.open(pdf_path)
 
-for page in doc:
-    text += page.get_text()
+    text = ""
 
-print("PDF Loaded Successfully!")
-print(text[:1000])
+    for page in doc:
+        text += page.get_text()
+
+    doc.close()
+
+    return text
+
