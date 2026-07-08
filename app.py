@@ -87,7 +87,7 @@ if uploaded_files:
 # ----------------------------
 # Ask Questions
 # ----------------------------
-
+st.write("documents_processed =", st.session_state.documents_processed)
 if st.session_state.documents_processed:
 
     st.divider()
