@@ -3,6 +3,7 @@ import chromadb
 
 from sentence_transformers import SentenceTransformer
 from huggingface_hub import InferenceClient
+from groq import Groq
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -19,8 +20,11 @@ embedding_model = SentenceTransformer(
 # LLM
 # ----------------------------
 
-llm = InferenceClient(
-    token=os.getenv("HF_TOKEN")
+#llm = InferenceClient(
+#    token=os.getenv("HF_TOKEN")
+#)
+client = Groq(
+    api_key=os.getenv("GROQ_API_KEY")
 )
 
 # ----------------------------
@@ -80,15 +84,26 @@ Question:
 Answer:
 """
 
-    response = llm.chat_completion(
-        model="Qwen/Qwen2.5-7B-Instruct",
-        messages=[
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ],
-        max_tokens=200
+    #response = llm.chat_completion(
+    #    model="Qwen/Qwen2.5-7B-Instruct",
+    #    messages=[
+    #        {
+    #            "role": "user",
+    #            "content": prompt
+    #        }
+    #    ],
+    #    max_tokens=200
+    #)
+    response = client.chat.completions.create(
+    model="llama-3.1-8b-instant",
+    messages=[
+        {
+            "role": "user",
+            "content": prompt
+        }
+    ],
+    max_tokens=200,
+    temperature=0
     )
 
     sources = sorted(
