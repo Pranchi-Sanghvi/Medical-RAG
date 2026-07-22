@@ -2,7 +2,7 @@ import os
 import chromadb
 
 from sentence_transformers import SentenceTransformer
-from huggingface_hub import InferenceClient
+#from huggingface_hub import InferenceClient
 from groq import Groq
 from dotenv import load_dotenv
 
@@ -23,7 +23,7 @@ embedding_model = SentenceTransformer(
 #llm = InferenceClient(
 #    token=os.getenv("HF_TOKEN")
 #)
-client = Groq(
+groq_client = Groq(
     api_key=os.getenv("GROQ_API_KEY")
 )
 
@@ -94,7 +94,7 @@ Answer:
     #    ],
     #    max_tokens=200
     #)
-    response = client.chat.completions.create(
+    response = groq_client.chat.completions.create(
     model="llama-3.1-8b-instant",
     messages=[
         {
